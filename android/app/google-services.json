@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "454660273096",
+    "project_id": "mahad-5fc63",
+    "storage_bucket": "mahad-5fc63.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:454660273096:android:f63aa01f2272e0e61f46fd",
+        "android_client_info": {
+          "package_name": "com.mujahid.mahad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqbqSvMWTY7vEsSoqbCC344bhg1e8sHV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
