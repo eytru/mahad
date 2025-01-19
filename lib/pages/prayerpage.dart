@@ -42,24 +42,24 @@ class PrayerPage extends StatelessWidget {
                     Tab(
                       child: Column(
                         children: [
-                          Text('Beginning', style: TextStyle(fontSize: 15)),
-                          Text('Times', style: TextStyle(fontSize: 15)),
+                          Text('Beginning', style: TextStyle(fontSize: 16)),
+                          Text('Times', style: TextStyle(fontSize: 16)),
                         ],
                       ),
                     ),
                     Tab(
                       child: Column(
                         children: [
-                          Text('Jamaat', style: TextStyle(fontSize: 15)),
-                          Text('Times', style: TextStyle(fontSize: 15)),
+                          Text('Jamaat', style: TextStyle(fontSize: 16)),
+                          Text('Times', style: TextStyle(fontSize: 16)),
                         ],
                       ),
                     ),
                     Tab(
                       child: Column(
                         children: [
-                          Text('Jamaat', style: TextStyle(fontSize: 15)),
-                          Text('Tomorrow', style: TextStyle(fontSize: 15)),
+                          Text('Jamaat', style: TextStyle(fontSize: 16)),
+                          Text('Tomorrow', style: TextStyle(fontSize: 16)),
                         ],
                       ),
                     ),
