@@ -12,10 +12,16 @@ class PrayerPage extends StatefulWidget {
 }
 
 class _PrayerPageState extends State<PrayerPage> {
-  PrayerData? prayerData;
+  PrayerData? prayerDataToday;
+  PrayerData? prayerDataTomorrow;
+
   String currentMonth =
       DateFormat('MMMM').format(DateTime.now()); // e.g., "January"
+  String nextMonth = DateFormat('MMMM').format(DateTime.now()
+      .add(const Duration(days: 1))); // Handle month change for tomorrow
   int todayDate = DateTime.now().day; // e.g., 19
+  int tomorrowDate =
+      DateTime.now().add(const Duration(days: 1)).day; // e.g., 20
   String currentDayDate = DateFormat('EEEE d MMMM yyyy').format(DateTime.now());
 
   @override
@@ -25,35 +31,41 @@ class _PrayerPageState extends State<PrayerPage> {
   }
 
   Future<void> fetchPrayerTimes() async {
-    // Fetch prayer times from Firestore
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
-        .instance
-        .collection(currentMonth)
-        .where('DATE', isEqualTo: todayDate)
-        .get();
+    // Fetch today's prayer times
+    QuerySnapshot<Map<String, dynamic>> querySnapshotToday =
+        await FirebaseFirestore.instance
+            .collection(currentMonth)
+            .where('DATE', isEqualTo: todayDate)
+            .get();
 
-    if (querySnapshot.docs.isNotEmpty) {
-      // If data is found, set the prayer times
+    if (querySnapshotToday.docs.isNotEmpty) {
       setState(() {
-        prayerData = PrayerData.fromJson(querySnapshot.docs[0].data());
+        prayerDataToday =
+            PrayerData.fromJson(querySnapshotToday.docs[0].data());
       });
     } else {
-      // If no data found, set all times to "00:00"
       setState(() {
-        prayerData = PrayerData(
-          date: 0,
-          bFajr: "00:00",
-          sunrise: "00:00",
-          bZohar: "00:00",
-          bAsr: "00:00",
-          bMaghrib: "00:00",
-          bIsha: "00:00",
-          fajr: "00:00",
-          zohar: "00:00",
-          asr: "00:00",
-          maghrib: "00:00",
-          isha: "00:00",
-        );
+        prayerDataToday =
+            PrayerData.empty(); // Fallback in case data is missing
+      });
+    }
+
+    // Fetch tomorrow's prayer times
+    QuerySnapshot<Map<String, dynamic>> querySnapshotTomorrow =
+        await FirebaseFirestore.instance
+            .collection(nextMonth)
+            .where('DATE', isEqualTo: tomorrowDate)
+            .get();
+
+    if (querySnapshotTomorrow.docs.isNotEmpty) {
+      setState(() {
+        prayerDataTomorrow =
+            PrayerData.fromJson(querySnapshotTomorrow.docs[0].data());
+      });
+    } else {
+      setState(() {
+        prayerDataTomorrow =
+            PrayerData.empty(); // Fallback in case data is missing
       });
     }
   }
@@ -122,15 +134,27 @@ class _PrayerPageState extends State<PrayerPage> {
                     children: [
                       SafeArea(
                         bottom: true,
-                        child: PrayerBoxes(),
+                        child: PrayerBoxes(
+                          prayerData: prayerDataToday,
+                          prayerBeginning: true,
+                          prayerJamaat: false,
+                        ),
                       ),
                       SafeArea(
                         bottom: true,
-                        child: PrayerBoxes(),
+                        child: PrayerBoxes(
+                          prayerData: prayerDataToday,
+                          prayerBeginning: false,
+                          prayerJamaat: true,
+                        ),
                       ),
                       SafeArea(
                         bottom: true,
-                        child: PrayerBoxes(),
+                        child: PrayerBoxes(
+                          prayerData: prayerDataTomorrow,
+                          prayerBeginning: false,
+                          prayerJamaat: true,
+                        ),
                       ),
                     ],
                   ),

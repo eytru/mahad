@@ -47,17 +47,33 @@ class PrayerData {
   factory PrayerData.fromJson(Map<String, dynamic> json) {
     return PrayerData(
       date: json['DATE'] ?? 0,
-      bFajr: json['bFAJR'] ?? '',
-      sunrise: json['SUNRISE'] ?? '',
-      bZohar: json['bZOHAR'] ?? '',
-      bAsr: json['bASR'] ?? '',
-      bMaghrib: json['bMAGHRIB'] ?? '',
-      bIsha: json['bISHA'] ?? '',
-      fajr: json['FAJR'] ?? '',
-      zohar: json['ZOHAR'] ?? '',
-      asr: json['ASR'] ?? '',
-      maghrib: json['MAGHRIB'] ?? '',
-      isha: json['ISHA'] ?? '',
+      bFajr: json['bFAJR'] ?? '00:00',
+      sunrise: json['SUNRISE'] ?? '00:00',
+      bZohar: json['bZOHAR'] ?? '00:00',
+      bAsr: json['bASR'] ?? '00:00',
+      bMaghrib: json['bMAGHRIB'] ?? '00:00',
+      bIsha: json['bISHA'] ?? '00:00',
+      fajr: json['FAJR'] ?? '00:00',
+      zohar: json['ZOHAR'] ?? '00:00',
+      asr: json['ASR'] ?? '00:00',
+      maghrib: json['MAGHRIB'] ?? '00:00',
+      isha: json['ISHA'] ?? '00:00',
+    );
+  }
+  factory PrayerData.empty() {
+    return PrayerData(
+      date: 0,
+      bFajr: "00:00",
+      sunrise: "00:00",
+      bZohar: "00:00",
+      bAsr: "00:00",
+      bMaghrib: "00:00",
+      bIsha: "00:00",
+      fajr: "00:00",
+      zohar: "00:00",
+      asr: "00:00",
+      maghrib: "00:00",
+      isha: "00:00",
     );
   }
 }
