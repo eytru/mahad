@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mahad/models/prayer_data.dart';
 import 'package:mahad/helper/time.dart'; // Import the helper file
+import 'package:intl/intl.dart'; // Import the intl package for date formatting
 
 class PrayerBoxes extends StatelessWidget {
   final PrayerData? prayerData;
@@ -48,8 +49,12 @@ class PrayerBoxes extends StatelessWidget {
     // Format the times using the helper function
     prayerTimes = prayerTimes
         .asMap()
-        .map((index, time) =>
-            MapEntry(index, formatTime(time, prayerNames[index])))
+        .map((index, time) {
+          DateTime prayerTime = formatTime(time, prayerNames[index]);
+          // Format the DateTime to "hh:mm a" (e.g., 02:00 AM)
+          String formattedTime = DateFormat('hh:mm a').format(prayerTime);
+          return MapEntry(index, formattedTime);
+        })
         .values
         .toList();
 
