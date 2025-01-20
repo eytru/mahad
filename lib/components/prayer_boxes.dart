@@ -47,7 +47,7 @@ class PrayerBoxes extends StatelessWidget {
     // If it's the Jamaat times, we could decide to adjust how the times are shown
     // For now, let's use a simple approach and show the same times but with "Jamaat" next to them.
     if (prayerJamaat) {
-      prayerTimes = prayerTimes.map((time) => "$time").toList();
+      prayerTimes = prayerTimes.map((time) => time).toList();
     }
 
     return Padding(
