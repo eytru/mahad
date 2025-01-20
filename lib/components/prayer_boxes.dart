@@ -1,8 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mahad/models/prayer_data.dart';
 
 class PrayerBoxes extends StatelessWidget {
-  const PrayerBoxes({super.key});
+  final PrayerData? prayerData;
+  final bool prayerBeginning;
+  final bool prayerJamaat;
+
+  const PrayerBoxes({
+    super.key,
+    this.prayerData,
+    required this.prayerBeginning,
+    required this.prayerJamaat,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +24,31 @@ class PrayerBoxes extends StatelessWidget {
       'Maghrib',
       'Isha'
     ];
+
+    // Determine the prayer times based on the 'prayerBeginning' and 'prayerJamaat' flags
+    List<String> prayerTimes = prayerBeginning
+        ? [
+            prayerData?.bFajr ?? "00:00",
+            prayerData?.sunrise ?? "00:00",
+            prayerData?.bZohar ?? "00:00",
+            prayerData?.bAsr ?? "00:00",
+            prayerData?.bMaghrib ?? "00:00",
+            prayerData?.bIsha ?? "00:00"
+          ]
+        : [
+            prayerData?.fajr ?? "00:00",
+            prayerData?.sunrise ?? "00:00",
+            prayerData?.zohar ?? "00:00",
+            prayerData?.asr ?? "00:00",
+            prayerData?.maghrib ?? "00:00",
+            prayerData?.isha ?? "00:00"
+          ];
+
+    // If it's the Jamaat times, we could decide to adjust how the times are shown
+    // For now, let's use a simple approach and show the same times but with "Jamaat" next to them.
+    if (prayerJamaat) {
+      prayerTimes = prayerTimes.map((time) => time).toList();
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0), // Adjusted padding
@@ -51,7 +86,8 @@ class PrayerBoxes extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 12), // Increased space between text and icon
+                      const SizedBox(
+                          height: 12), // Increased space between text and icon
                       Icon(
                         index == 0 // Fajr case
                             ? CupertinoIcons.moon
@@ -63,18 +99,19 @@ class PrayerBoxes extends StatelessWidget {
                                         ? CupertinoIcons.sun_max
                                         : (index == 4 // Maghrib case
                                             ? CupertinoIcons.sunset_fill
-                                            : CupertinoIcons.moon_stars_fill)))), // Isha case
+                                            : CupertinoIcons
+                                                .moon_stars_fill)))), // Isha case
                         color: Colors.white,
                         size: 40, // Increased icon size
                       ),
-                      const SizedBox(height: 12), // Increased space between icon and time
+                      const SizedBox(
+                          height: 12), // Increased space between icon and time
                       Text(
-                        '12:00 AM', // Placeholder time
+                        prayerTimes[index], // Display the correct prayer time
                         style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold
-                        ),
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

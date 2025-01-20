@@ -1,14 +1,77 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mahad/components/prayer_boxes.dart';
+import 'package:mahad/models/prayer_data.dart';
 
-class PrayerPage extends StatelessWidget {
+class PrayerPage extends StatefulWidget {
   const PrayerPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    String currentDayDate = DateFormat(' EEEE d MMMM yyyy ').format(DateTime.now());
+  State<PrayerPage> createState() => _PrayerPageState();
+}
 
+class _PrayerPageState extends State<PrayerPage> {
+  PrayerData? prayerDataToday;
+  PrayerData? prayerDataTomorrow;
+
+  String currentMonth =
+      DateFormat('MMMM').format(DateTime.now()); // e.g., "January"
+  String nextMonth = DateFormat('MMMM').format(DateTime.now()
+      .add(const Duration(days: 1))); // Handle month change for tomorrow
+  int todayDate = DateTime.now().day; // e.g., 19
+  int tomorrowDate =
+      DateTime.now().add(const Duration(days: 1)).day; // e.g., 20
+  String currentDayDate = DateFormat('EEEE d MMMM yyyy').format(DateTime.now());
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPrayerTimes();
+  }
+
+  Future<void> fetchPrayerTimes() async {
+    // Fetch today's prayer times
+    QuerySnapshot<Map<String, dynamic>> querySnapshotToday =
+        await FirebaseFirestore.instance
+            .collection(currentMonth)
+            .where('DATE', isEqualTo: todayDate)
+            .get();
+
+    if (querySnapshotToday.docs.isNotEmpty) {
+      setState(() {
+        prayerDataToday =
+            PrayerData.fromJson(querySnapshotToday.docs[0].data());
+      });
+    } else {
+      setState(() {
+        prayerDataToday =
+            PrayerData.empty(); // Fallback in case data is missing
+      });
+    }
+
+    // Fetch tomorrow's prayer times
+    QuerySnapshot<Map<String, dynamic>> querySnapshotTomorrow =
+        await FirebaseFirestore.instance
+            .collection(nextMonth)
+            .where('DATE', isEqualTo: tomorrowDate)
+            .get();
+
+    if (querySnapshotTomorrow.docs.isNotEmpty) {
+      setState(() {
+        prayerDataTomorrow =
+            PrayerData.fromJson(querySnapshotTomorrow.docs[0].data());
+      });
+    } else {
+      setState(() {
+        prayerDataTomorrow =
+            PrayerData.empty(); // Fallback in case data is missing
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SafeArea(
       child: DefaultTabController(
         length: 3,
@@ -33,8 +96,8 @@ class PrayerPage extends StatelessWidget {
                 const TabBar(
                   dividerColor: Colors.transparent,
                   indicator: UnderlineTabIndicator(
-                    borderSide: BorderSide(width: 3.0, color: Colors.white),
-                    insets: EdgeInsets.symmetric(horizontal: 80.0), // Adjust this to make it wider
+                    borderSide: BorderSide(width: 2.5, color: Colors.white),
+                    insets: EdgeInsets.symmetric(horizontal: 80.0),
                   ),
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.grey,
@@ -42,24 +105,24 @@ class PrayerPage extends StatelessWidget {
                     Tab(
                       child: Column(
                         children: [
-                          Text('Beginning', style: TextStyle(fontSize: 16)),
-                          Text('Times', style: TextStyle(fontSize: 16)),
+                          Text('Beginning', style: TextStyle(fontSize: 15)),
+                          Text('Times', style: TextStyle(fontSize: 15)),
                         ],
                       ),
                     ),
                     Tab(
                       child: Column(
                         children: [
-                          Text('Jamaat', style: TextStyle(fontSize: 16)),
-                          Text('Times', style: TextStyle(fontSize: 16)),
+                          Text('Jamaat', style: TextStyle(fontSize: 15)),
+                          Text('Times', style: TextStyle(fontSize: 15)),
                         ],
                       ),
                     ),
                     Tab(
                       child: Column(
                         children: [
-                          Text('Jamaat', style: TextStyle(fontSize: 16)),
-                          Text('Tomorrow', style: TextStyle(fontSize: 16)),
+                          Text('Jamaat', style: TextStyle(fontSize: 15)),
+                          Text('Tomorrow', style: TextStyle(fontSize: 15)),
                         ],
                       ),
                     ),
@@ -71,15 +134,27 @@ class PrayerPage extends StatelessWidget {
                     children: [
                       SafeArea(
                         bottom: true,
-                        child: PrayerBoxes(),
+                        child: PrayerBoxes(
+                          prayerData: prayerDataToday,
+                          prayerBeginning: true,
+                          prayerJamaat: false,
+                        ),
                       ),
                       SafeArea(
                         bottom: true,
-                        child: PrayerBoxes(),
+                        child: PrayerBoxes(
+                          prayerData: prayerDataToday,
+                          prayerBeginning: false,
+                          prayerJamaat: true,
+                        ),
                       ),
                       SafeArea(
                         bottom: true,
-                        child: PrayerBoxes(),
+                        child: PrayerBoxes(
+                          prayerData: prayerDataTomorrow,
+                          prayerBeginning: false,
+                          prayerJamaat: true,
+                        ),
                       ),
                     ],
                   ),
