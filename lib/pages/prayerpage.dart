@@ -23,6 +23,10 @@ class _PrayerPageState extends State<PrayerPage> {
   int tomorrowDate =
       DateTime.now().add(const Duration(days: 1)).day; // e.g., 20
   String currentDayDate = DateFormat('EEEE d MMMM yyyy').format(DateTime.now());
+  String tomorrowDayDate = DateFormat('EEEE d MMMM yyyy')
+      .format(DateTime.now().add(const Duration(days: 1)));
+
+  int selectedTabIndex = 0; // Track the selected tab index
 
   @override
   void initState() {
@@ -84,7 +88,9 @@ class _PrayerPageState extends State<PrayerPage> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
                   child: Text(
-                    currentDayDate,
+                    selectedTabIndex == 2
+                        ? tomorrowDayDate // Display tomorrow's date on the third tab
+                        : currentDayDate, // Display today's date otherwise
                     style: const TextStyle(
                       fontSize: 25,
                       color: Colors.white,
@@ -93,15 +99,20 @@ class _PrayerPageState extends State<PrayerPage> {
                   ),
                 ),
                 // TabBar with wider and equal-length indicator
-                const TabBar(
+                TabBar(
                   dividerColor: Colors.transparent,
-                  indicator: UnderlineTabIndicator(
+                  indicator: const UnderlineTabIndicator(
                     borderSide: BorderSide(width: 2.5, color: Colors.white),
                     insets: EdgeInsets.symmetric(horizontal: 80.0),
                   ),
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.grey,
-                  tabs: [
+                  onTap: (index) {
+                    setState(() {
+                      selectedTabIndex = index; // Update the selected tab index
+                    });
+                  },
+                  tabs: const [
                     Tab(
                       child: Column(
                         children: [
