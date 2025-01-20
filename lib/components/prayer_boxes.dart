@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mahad/models/prayer_data.dart';
+import 'package:mahad/helper/time.dart'; // Import the helper file
+import 'package:intl/intl.dart'; // Import the intl package for date formatting
 
 class PrayerBoxes extends StatelessWidget {
   final PrayerData? prayerData;
@@ -44,11 +46,17 @@ class PrayerBoxes extends StatelessWidget {
             prayerData?.isha ?? "00:00"
           ];
 
-    // If it's the Jamaat times, we could decide to adjust how the times are shown
-    // For now, let's use a simple approach and show the same times but with "Jamaat" next to them.
-    if (prayerJamaat) {
-      prayerTimes = prayerTimes.map((time) => time).toList();
-    }
+    // Format the times using the helper function
+    prayerTimes = prayerTimes
+        .asMap()
+        .map((index, time) {
+          DateTime prayerTime = formatTime(time, prayerNames[index]);
+          // Format the DateTime to "hh:mm a" (e.g., 02:00 AM)
+          String formattedTime = DateFormat('hh:mm a').format(prayerTime);
+          return MapEntry(index, formattedTime);
+        })
+        .values
+        .toList();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0), // Adjusted padding
@@ -107,7 +115,7 @@ class PrayerBoxes extends StatelessWidget {
                       const SizedBox(
                           height: 12), // Increased space between icon and time
                       Text(
-                        prayerTimes[index], // Display the correct prayer time
+                        prayerTimes[index], // Display the formatted prayer time
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,

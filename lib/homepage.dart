@@ -35,10 +35,25 @@ class _HomePageState extends State<HomePage> {
             _currentIndex = index; // Update the selected index
           });
         },
-        items: const [
-          Icon(Icons.mosque),
-          Icon(Icons.calendar_month),
-          Icon(Icons.settings),
+        items: [
+          Image.asset(
+            'lib/icons/mosque.png',
+            width: 25,
+            height: 25,
+            color: Colors.black, // Optional: Tint the image white
+          ),
+          Image.asset(
+            'lib/icons/timetable.png',
+            width: 25,
+            height: 25,
+            color: Colors.black, // Optional: Tint the image white
+          ),
+          Image.asset(
+            'lib/icons/settings.png',
+            width: 25,
+            height: 25,
+            color: Colors.black, // Optional: Tint the image white
+          ),
         ],
       ),
     );
