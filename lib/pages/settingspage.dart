@@ -50,39 +50,15 @@ class _SettingsPageState extends State<SettingsPage> {
             mainAxisAlignment:
                 MainAxisAlignment.start, // Aligns children toward the top
             children: [
-              SizedBox(height: 50), // Adds space from the top
+              const SizedBox(height: 50), // Adds space from the top
 
               // Information Section with slightly raised effect
-              Container(
+              SizedBox(
                 height: 70, // Manually set the height of the button
                 child: Card(
                   elevation: 8, // Slightly raised effect
                   color: const Color.fromARGB(255, 1, 52, 94),
-                  child: ListTile(
-                    leading: const ImageIcon(
-                      AssetImage('lib/icons/info.png'),
-                      size: 25,
-                      color: Colors.white,
-                    ),
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .spaceBetween, // To space the text and icon
-                      children: const [
-                        Text(
-                          'Information',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios, // Arrow facing to the right
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ],
-                    ),
+                  child: GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
@@ -106,80 +82,128 @@ class _SettingsPageState extends State<SettingsPage> {
                               child: child,
                             );
                           },
+                          transitionDuration: const Duration(
+                              milliseconds: 150), // Quicker transition
                         ),
                       );
                     },
-                    splashColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
+                    behavior:
+                        HitTestBehavior.translucent, // Ensure taps are detected
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .spaceBetween, // Align text and icon
+                        children: [
+                          Row(
+                            children: const [
+                              ImageIcon(
+                                AssetImage('lib/icons/info.png'),
+                                size: 25,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                'Information',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
 
               // Default Prayer Page Dropdown with slightly raised effect
-              Container(
+              SizedBox(
                 height: 70, // Manually set the height of the button
                 child: Card(
                   elevation: 8, // Slightly raised effect
                   color: const Color.fromARGB(255, 1, 52, 94),
-                  child: ListTile(
-                    leading: const ImageIcon(
-                      AssetImage('lib/icons/mosque.png'),
-                      size: 25,
-                      color: Colors.white,
-                    ),
-                    title: const Text(
-                      'Default Page',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    trailing: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 0), // Padding around the dropdown
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 5.0, vertical: 5.0),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 2),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: selectedOption,
-                            isDense: true, // Make the dropdown compact
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            icon: const Icon(Icons.arrow_drop_down,
-                                color: Colors.white),
-                            items: prayerOptions.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                  child: GestureDetector(
+                    behavior:
+                        HitTestBehavior.translucent, // Remove ripple effect
+                    onTap: () {}, // No action for tap
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .spaceBetween, // Align text and dropdown
+                        children: [
+                          Row(
+                            children: const [
+                              ImageIcon(
+                                AssetImage('lib/icons/mosque.png'),
+                                size: 25,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                'Default Page',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
-                              );
-                            }).toList(),
-                            onChanged: (newValue) {
-                              setState(() {
-                                selectedOption = newValue;
-                              });
-                              if (newValue != null) {
-                                _saveDefaultPrayerPage(newValue);
-                              }
-                            },
-                            dropdownColor: const Color.fromARGB(255, 1, 52, 94),
+                              ),
+                            ],
                           ),
-                        ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 5.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white, width: 2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: selectedOption,
+                                isDense: true, // Make the dropdown compact
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                icon: const Icon(Icons.arrow_drop_down,
+                                    color: Colors.white),
+                                items: prayerOptions.map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    selectedOption = newValue;
+                                  });
+                                  if (newValue != null) {
+                                    _saveDefaultPrayerPage(newValue);
+                                  }
+                                },
+                                dropdownColor:
+                                    const Color.fromARGB(255, 1, 52, 94),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

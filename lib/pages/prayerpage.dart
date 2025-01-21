@@ -13,7 +13,7 @@ class PrayerPage extends StatefulWidget {
 }
 
 class _PrayerPageState extends State<PrayerPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   PrayerData? prayerDataToday;
   PrayerData? prayerDataTomorrow;
 
@@ -34,6 +34,8 @@ class _PrayerPageState extends State<PrayerPage>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance
+        .addObserver(this); // Add observer for lifecycle events
     _tabController = TabController(length: 3, vsync: this);
     _loadDefaultTab();
     fetchPrayerTimes();
@@ -48,8 +50,27 @@ class _PrayerPageState extends State<PrayerPage>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Remove observer
     _tabController.dispose();
     super.dispose();
+  }
+
+  // Called when the app lifecycle changes
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Fetch fresh prayer times and load default tab on app resume
+      _loadDefaultTab();
+      fetchPrayerTimes();
+    }
+  }
+
+  // Called when the widget is reinserted into the widget tree (e.g., returning to this page)
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadDefaultTab();
+    fetchPrayerTimes();
   }
 
   // Load the default tab index from SharedPreferences
