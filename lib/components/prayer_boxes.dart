@@ -58,6 +58,32 @@ class PrayerBoxes extends StatelessWidget {
         .values
         .toList();
 
+    // Get current time for comparison
+    DateTime currentTime = DateTime.now();
+
+    // Function to determine which prayer is currently active
+    int? getCurrentPrayerIndex() {
+      List<DateTime> prayerStartTimes = [
+        formatTime(prayerData?.fajr ?? "00:00", 'Fajr'),
+        formatTime(prayerData?.sunrise ?? "00:00", 'Sunrise'),
+        formatTime(prayerData?.zohar ?? "00:00", 'Zohar'),
+        formatTime(prayerData?.asr ?? "00:00", 'Asr'),
+        formatTime(prayerData?.maghrib ?? "00:00", 'Maghrib'),
+        formatTime(prayerData?.isha ?? "00:00", 'Isha')
+      ];
+
+      for (int i = 0; i < prayerStartTimes.length; i++) {
+        if (currentTime.isAfter(prayerStartTimes[i]) &&
+            (i == prayerStartTimes.length - 1 ||
+                currentTime.isBefore(prayerStartTimes[i + 1]))) {
+          return i;
+        }
+      }
+      return null; // No prayer is currently active
+    }
+
+    int? currentPrayerIndex = getCurrentPrayerIndex();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0), // Adjusted padding
       child: LayoutBuilder(
@@ -77,10 +103,16 @@ class PrayerBoxes extends StatelessWidget {
               ),
               itemCount: prayerNames.length,
               itemBuilder: (context, index) {
+                bool isCurrentPrayer = index == currentPrayerIndex;
+
                 return Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF005CB2),
+                    color:
+                        isCurrentPrayer ? Colors.red : const Color(0xFF005CB2),
                     borderRadius: BorderRadius.circular(10),
+                    border: isCurrentPrayer
+                        ? Border.all(color: Colors.white, width: 3)
+                        : null, // Add a border around the current prayer
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
