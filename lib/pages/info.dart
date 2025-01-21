@@ -16,15 +16,19 @@ class InfoPage extends StatelessWidget {
           fontSize: 25,
           color: Colors.white,
         ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios, // Use the arrow with a longer tail
-            color: Colors.white, // Set color to white
-            size: 20, // Adjust size for better visibility
-          ),
-          onPressed: () {
+        leading: GestureDetector(
+          behavior: HitTestBehavior.translucent, // Ensure taps are detected
+          onTap: () {
             Navigator.pop(context); // Navigate back to the previous screen
           },
+          child: const Padding(
+            padding: EdgeInsets.all(8.0), // Add padding for better touch target
+            child: Icon(
+              Icons.arrow_back_ios, // Use the arrow with a longer tail
+              color: Colors.white, // Set color to white
+              size: 20, // Adjust size for better visibility
+            ),
+          ),
         ),
       ),
       body: const Center(
