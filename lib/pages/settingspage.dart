@@ -83,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             );
                           },
                           transitionDuration: const Duration(
-                              milliseconds: 150), // Quicker transition
+                              milliseconds: 300), // Quicker transition
                         ),
                       );
                     },
