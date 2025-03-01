@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hijri/hijri_calendar.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:scroll_snap_list/scroll_snap_list.dart';
-import 'package:hijri/hijri_calendar.dart'; // Hijri calendar package
+import 'package:firebase_storage/firebase_storage.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -17,27 +19,26 @@ class _CalendarPageState extends State<CalendarPage>
   int currentMonthIndex = DateTime.now().month - 1;
   late PDFViewController _pdfViewController;
   Uint8List? _pdfBytes;
-  bool isRamadan = false; // Track if it's Ramadan
-
+  final isRamadan = HijriCalendar.now().hMonth == 9;
   final List<String> _months = const [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
+    'January',
+    'February',
+    'March',
+    'April',
     'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
   ];
 
   @override
   void initState() {
     super.initState();
-    _checkHijriMonth();
+    _loadPdfBytes();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -47,18 +48,35 @@ class _CalendarPageState extends State<CalendarPage>
     super.dispose();
   }
 
-  // Function to check if it's the 9th month (Ramadan) in the Hijri calendar
-  Future<void> _checkHijriMonth() async {
+  Future<void> _loadPdfBytes() async {
     try {
-      HijriCalendar todayHijri = HijriCalendar.now();
-      isRamadan = todayHijri.hMonth == 9;
-
-      // Load the correct PDF based on the Hijri month
-      String pdfPath =
-          isRamadan ? 'lib/pdf/ramadan.pdf' : 'lib/pdf/timetable.pdf';
-      _pdfBytes = (await rootBundle.load(pdfPath)).buffer.asUint8List();
-
-      setState(() {});
+      if (isRamadan) {
+        final fileName = 'ramadan.pdf';
+        try {
+          // Explicitly specify the custom storage bucket.
+          final storage = FirebaseStorage.instanceFor(
+            bucket: 'gs://mahad-5fc63.firebasestorage.app',
+          );
+          // Reference the file inside that bucket.
+          final ref = storage.ref().child(fileName);
+          const int maxPdfSize = 10 * 1024 * 1024; // 10MB file size limit
+          final data =
+              await ref.getData(maxPdfSize).timeout(const Duration(seconds: 7));
+          _pdfBytes = data;
+        } catch (e) {
+          // Fall back to local timetable.pdf
+          _pdfBytes = (await rootBundle.load('lib/pdf/timetable.pdf'))
+              .buffer
+              .asUint8List();
+        }
+      } else {
+        _pdfBytes = (await rootBundle.load('lib/pdf/timetable.pdf'))
+            .buffer
+            .asUint8List();
+      }
+      if (mounted) {
+        setState(() {});
+      }
     } catch (e) {
       throw Exception('Error loading PDF: $e');
     }
@@ -75,97 +93,118 @@ class _CalendarPageState extends State<CalendarPage>
     }
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 7.5),
+      child: Column(
+        children: [
+          Expanded(
+            child: SafeArea(
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: 595 / 842, // A4 aspect ratio
+                  child: _pdfBytes != null
+                      ? ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width,
+                            maxHeight: MediaQuery.of(context).size.height,
+                          ),
+                          child: PDFView(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.background,
+                            pdfData: _pdfBytes!,
+                            defaultPage: currentMonthIndex,
+                            swipeHorizontal: true,
+                            fitPolicy: FitPolicy.BOTH,
+                            onViewCreated:
+                                (PDFViewController pdfViewController) {
+                              setState(
+                                () {
+                                  _pdfViewController = pdfViewController;
+                                },
+                              );
+                            },
+                            onPageChanged: (int? page, int? total) {
+                              setState(
+                                () {
+                                  currentMonthIndex = page!;
+                                  _scrollSnapListKey.currentState
+                                      ?.focusToItem(page);
+                                },
+                              );
+                            },
+                          ),
+                        )
+                      : const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 50),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                ),
+              ),
+            ),
+          ),
+          if (!isRamadan)
+            SizedBox(
+              height: 90,
+              child: ScrollSnapList(
+                key: _scrollSnapListKey,
+                itemBuilder: _buildMonthItem,
+                itemSize: 140,
+                dynamicItemSize: true,
+                dynamicItemOpacity: 0.7,
+                onItemFocus: (item) {
+                  setState(
+                    () {
+                      currentMonthIndex = item.toInt();
+                    },
+                  );
+                  _pdfViewController.setPage(currentMonthIndex);
+                },
+                initialIndex: currentMonthIndex.toDouble(),
+                itemCount: _months.length,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMonthItem(BuildContext context, int index) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 11),
+      padding: MediaQuery.of(context).size.height > 750
+          ? const EdgeInsets.only(top: 3)
+          : const EdgeInsets.only(top: 15),
       child: SizedBox(
-        width: 100,
+        width: 140,
         child: Column(
           children: [
             Container(
-              height: 45,
-              width: 75,
+              height: 55,
+              width: 120,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 2, 93, 167),
-                borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(15),
               ),
               child: Center(
                 child: Text(
                   _months[index],
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 17.5,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             )
           ],
         ),
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: SafeArea(
-            child: Center(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height > 670
-                    ? MediaQuery.of(context).size.height * 0.60
-                    : MediaQuery.of(context).size.height * 0.75,
-                width: MediaQuery.of(context).size.width * 0.95,
-                child: _pdfBytes != null
-                    ? PDFView(
-                        pdfData: _pdfBytes!,
-                        defaultPage: currentMonthIndex,
-                        swipeHorizontal: true,
-                        onViewCreated: (PDFViewController pdfViewController) {
-                          setState(() {
-                            _pdfViewController = pdfViewController;
-                          });
-                        },
-                        onPageChanged: (int? page, int? total) {
-                          setState(() {
-                            currentMonthIndex = page ?? 0;
-                            _scrollSnapListKey.currentState
-                                ?.focusToItem(currentMonthIndex);
-                          });
-                        },
-                      )
-                    : const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(),
-                      ),
-              ),
-            ),
-          ),
-        ),
-        // Hide month scroll list if it's Ramadan
-        if (!isRamadan)
-          SizedBox(
-            height: 100,
-            child: ScrollSnapList(
-              key: _scrollSnapListKey,
-              itemBuilder: _buildMonthItem,
-              itemSize: 100,
-              dynamicItemSize: true,
-              dynamicItemOpacity: 0.7,
-              onItemFocus: (item) {
-                setState(() {
-                  currentMonthIndex = item;
-                });
-                _pdfViewController.setPage(currentMonthIndex);
-              },
-              initialIndex: currentMonthIndex.toDouble(),
-              itemCount: _months.length,
-            ),
-          ),
-      ],
     );
   }
 }
