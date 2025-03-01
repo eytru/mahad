@@ -17,25 +17,22 @@ class _PrayerPageState extends State<PrayerPage>
   PrayerData? prayerDataToday;
   PrayerData? prayerDataTomorrow;
 
-  String currentMonth =
-      DateFormat('MMMM').format(DateTime.now()); // e.g., "January"
-  String nextMonth = DateFormat('MMMM').format(DateTime.now()
-      .add(const Duration(days: 1))); // Handle month change for tomorrow
-  int todayDate = DateTime.now().day; // e.g., 19
-  int tomorrowDate =
-      DateTime.now().add(const Duration(days: 1)).day; // e.g., 20
+  String currentMonth = DateFormat('MMMM').format(DateTime.now());
+  String nextMonth =
+      DateFormat('MMMM').format(DateTime.now().add(const Duration(days: 1)));
+  int todayDate = DateTime.now().day;
+  int tomorrowDate = DateTime.now().add(const Duration(days: 1)).day;
   String currentDayDate = DateFormat('EEEE d MMMM yyyy').format(DateTime.now());
   String tomorrowDayDate = DateFormat('EEEE d MMMM yyyy')
       .format(DateTime.now().add(const Duration(days: 1)));
 
-  late TabController _tabController; // TabController for dynamic updates
-  int selectedTabIndex = 0; // Default to the first tab
+  late TabController _tabController;
+  int selectedTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance
-        .addObserver(this); // Add observer for lifecycle events
+    WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 3, vsync: this);
     _loadDefaultTab();
     fetchPrayerTimes();
@@ -50,22 +47,19 @@ class _PrayerPageState extends State<PrayerPage>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this); // Remove observer
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     super.dispose();
   }
 
-  // Called when the app lifecycle changes
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // Fetch fresh prayer times and load default tab on app resume
       _loadDefaultTab();
       fetchPrayerTimes();
     }
   }
 
-  // Called when the widget is reinserted into the widget tree (e.g., returning to this page)
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -73,7 +67,6 @@ class _PrayerPageState extends State<PrayerPage>
     fetchPrayerTimes();
   }
 
-  // Load the default tab index from SharedPreferences
   Future<void> _loadDefaultTab() async {
     final prefs = await SharedPreferences.getInstance();
     final defaultPage =
@@ -81,12 +74,11 @@ class _PrayerPageState extends State<PrayerPage>
 
     setState(() {
       selectedTabIndex = defaultPage == 'Beginning Times' ? 0 : 1;
-      _tabController.index = selectedTabIndex; // Set the TabController's index
+      _tabController.index = selectedTabIndex;
     });
   }
 
   Future<void> fetchPrayerTimes() async {
-    // Fetch today's prayer times
     QuerySnapshot<Map<String, dynamic>> querySnapshotToday =
         await FirebaseFirestore.instance
             .collection(currentMonth)
@@ -100,12 +92,10 @@ class _PrayerPageState extends State<PrayerPage>
       });
     } else {
       setState(() {
-        prayerDataToday =
-            PrayerData.empty(); // Fallback in case data is missing
+        prayerDataToday = PrayerData.empty();
       });
     }
 
-    // Fetch tomorrow's prayer times
     QuerySnapshot<Map<String, dynamic>> querySnapshotTomorrow =
         await FirebaseFirestore.instance
             .collection(nextMonth)
@@ -119,8 +109,7 @@ class _PrayerPageState extends State<PrayerPage>
       });
     } else {
       setState(() {
-        prayerDataTomorrow =
-            PrayerData.empty(); // Fallback in case data is missing
+        prayerDataTomorrow = PrayerData.empty();
       });
     }
   }
@@ -133,13 +122,10 @@ class _PrayerPageState extends State<PrayerPage>
           color: const Color.fromARGB(255, 1, 52, 94),
           child: Column(
             children: [
-              // Top section with date
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
                 child: Text(
-                  selectedTabIndex == 2
-                      ? tomorrowDayDate // Display tomorrow's date on the third tab
-                      : currentDayDate, // Display today's date otherwise
+                  selectedTabIndex == 2 ? tomorrowDayDate : currentDayDate,
                   style: const TextStyle(
                     fontSize: 25,
                     color: Colors.white,
@@ -147,9 +133,8 @@ class _PrayerPageState extends State<PrayerPage>
                   ),
                 ),
               ),
-              // TabBar with wider and equal-length indicator
               TabBar(
-                controller: _tabController, // Attach the TabController
+                controller: _tabController,
                 dividerColor: Colors.transparent,
                 indicator: const UnderlineTabIndicator(
                   borderSide: BorderSide(width: 2.5, color: Colors.white),
@@ -159,60 +144,38 @@ class _PrayerPageState extends State<PrayerPage>
                 unselectedLabelColor: Colors.grey,
                 tabs: const [
                   Tab(
-                    child: Column(
-                      children: [
-                        Text('Beginning', style: TextStyle(fontSize: 15)),
-                        Text('Times', style: TextStyle(fontSize: 15)),
-                      ],
-                    ),
-                  ),
+                      child:
+                          Column(children: [Text('Beginning'), Text('Times')])),
+                  Tab(child: Column(children: [Text('Jamaat'), Text('Times')])),
                   Tab(
-                    child: Column(
-                      children: [
-                        Text('Jamaat', style: TextStyle(fontSize: 15)),
-                        Text('Times', style: TextStyle(fontSize: 15)),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Column(
-                      children: [
-                        Text('Jamaat', style: TextStyle(fontSize: 15)),
-                        Text('Tomorrow', style: TextStyle(fontSize: 15)),
-                      ],
-                    ),
-                  ),
+                      child:
+                          Column(children: [Text('Jamaat'), Text('Tomorrow')])),
                 ],
               ),
-              // TabBarView
               Expanded(
                 child: TabBarView(
-                  controller: _tabController, // Attach the TabController
+                  controller: _tabController,
                   children: [
-                    SafeArea(
-                      bottom: true,
-                      child: PrayerBoxes(
+                    PrayerBoxes(
                         prayerData: prayerDataToday,
                         prayerBeginning: true,
                         prayerJamaat: false,
-                      ),
-                    ),
-                    SafeArea(
-                      bottom: true,
-                      child: PrayerBoxes(
+                        isThursday: false,
+                        isFriday: false),
+                    PrayerBoxes(
                         prayerData: prayerDataToday,
                         prayerBeginning: false,
                         prayerJamaat: true,
-                      ),
-                    ),
-                    SafeArea(
-                      bottom: true,
-                      child: PrayerBoxes(
+                        isThursday: false,
+                        isFriday: DateFormat('EEEE').format(DateTime.now()) ==
+                            'Friday'),
+                    PrayerBoxes(
                         prayerData: prayerDataTomorrow,
                         prayerBeginning: false,
                         prayerJamaat: true,
-                      ),
-                    ),
+                        isThursday: DateFormat('EEEE').format(DateTime.now()) ==
+                            'Thursday',
+                        isFriday: false),
                   ],
                 ),
               ),

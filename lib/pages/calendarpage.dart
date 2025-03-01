@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:scroll_snap_list/scroll_snap_list.dart';
+import 'package:hijri/hijri_calendar.dart'; // Hijri calendar package
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -10,11 +11,13 @@ class CalendarPage extends StatefulWidget {
   State<CalendarPage> createState() => _CalendarPageState();
 }
 
-class _CalendarPageState extends State<CalendarPage> with WidgetsBindingObserver {
+class _CalendarPageState extends State<CalendarPage>
+    with WidgetsBindingObserver {
   final GlobalKey<ScrollSnapListState> _scrollSnapListKey = GlobalKey();
   int currentMonthIndex = DateTime.now().month - 1;
   late PDFViewController _pdfViewController;
   Uint8List? _pdfBytes;
+  bool isRamadan = false; // Track if it's Ramadan
 
   final List<String> _months = const [
     'Jan',
@@ -34,7 +37,7 @@ class _CalendarPageState extends State<CalendarPage> with WidgetsBindingObserver
   @override
   void initState() {
     super.initState();
-    _loadPdfBytes();
+    _checkHijriMonth();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -44,17 +47,17 @@ class _CalendarPageState extends State<CalendarPage> with WidgetsBindingObserver
     super.dispose();
   }
 
-  Future<void> _loadPdfBytes() async {
+  // Function to check if it's the 9th month (Ramadan) in the Hijri calendar
+  Future<void> _checkHijriMonth() async {
     try {
-      if (DateTime.now().year == 2024 && DateTime.now().month == 9) {
-        _pdfBytes = (await rootBundle.load('lib/pdf/ramadan2024.pdf'))
-            .buffer
-            .asUint8List();
-      } else {
-        _pdfBytes = (await rootBundle.load('lib/pdf/timetable.pdf'))
-            .buffer
-            .asUint8List();
-      }
+      HijriCalendar todayHijri = HijriCalendar.now();
+      isRamadan = todayHijri.hMonth == 9;
+
+      // Load the correct PDF based on the Hijri month
+      String pdfPath =
+          isRamadan ? 'lib/pdf/ramadan.pdf' : 'lib/pdf/timetable.pdf';
+      _pdfBytes = (await rootBundle.load(pdfPath)).buffer.asUint8List();
+
       setState(() {});
     } catch (e) {
       throw Exception('Error loading PDF: $e');
@@ -83,7 +86,7 @@ class _CalendarPageState extends State<CalendarPage> with WidgetsBindingObserver
               height: 45,
               width: 75,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 2, 93, 167), // Updated color
+                color: const Color.fromARGB(255, 2, 93, 167),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
@@ -142,7 +145,8 @@ class _CalendarPageState extends State<CalendarPage> with WidgetsBindingObserver
             ),
           ),
         ),
-        if (!(DateTime.now().year == 2024 && DateTime.now().month == 9))
+        // Hide month scroll list if it's Ramadan
+        if (!isRamadan)
           SizedBox(
             height: 100,
             child: ScrollSnapList(
