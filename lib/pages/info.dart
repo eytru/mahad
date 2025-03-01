@@ -66,8 +66,10 @@ class InfoPage extends StatelessWidget {
       ),
       backgroundColor: Color.fromARGB(255, 1, 52, 94),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start, // Move content up
         children: [
+          const SizedBox(
+              height: 100), // Adjust this value to move everything up
           SafeArea(
             child: Center(
               child: Container(
@@ -77,14 +79,13 @@ class InfoPage extends StatelessWidget {
                   border: Border.all(color: Colors.transparent, width: 2),
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start, // Align to top
                   children: [
                     Image.asset(
-                      'lib/icons/al-mahadulislami.jpg',
-                      scale: 2,
+                      'lib/icons/Al-Mahadul-Islami-CenteredCropped.png',
+                      scale: 10,
                     ),
-                    const Padding(
-                        padding: EdgeInsets.only(top: 20)), // Added spacing
+                    const Padding(padding: EdgeInsets.only(top: 10)),
                     Text(
                       "Al Mahad ul Islami\nDorset Street\nBradford\nBD5 0LT",
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -92,7 +93,7 @@ class InfoPage extends StatelessWidget {
                           ),
                       textAlign: TextAlign.center,
                     ),
-                    const Padding(padding: EdgeInsets.only(top: 12)),
+                    const Padding(padding: EdgeInsets.only(top: 15)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -101,9 +102,7 @@ class InfoPage extends StatelessWidget {
                           color: Colors.white,
                           scale: 1.8,
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8),
-                        ),
+                        const Padding(padding: EdgeInsets.only(left: 8)),
                         RichText(
                           text: TextSpan(
                             text: "07898 481297",
@@ -128,9 +127,7 @@ class InfoPage extends StatelessWidget {
                           color: Colors.white,
                           scale: 1.7,
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8),
-                        ),
+                        const Padding(padding: EdgeInsets.only(left: 8)),
                         Text(
                           "Radio: 456.625",
                           style:
@@ -150,9 +147,7 @@ class InfoPage extends StatelessWidget {
                           color: Colors.white,
                           scale: 1.5,
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8),
-                        ),
+                        const Padding(padding: EdgeInsets.only(left: 8)),
                         RichText(
                           text: TextSpan(
                             children: [
@@ -195,9 +190,7 @@ class InfoPage extends StatelessWidget {
                           color: Colors.white,
                           scale: 4,
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 5),
-                        ),
+                        const Padding(padding: EdgeInsets.only(left: 5)),
                         RichText(
                           text: TextSpan(
                             children: [
@@ -234,7 +227,7 @@ class InfoPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const Padding(padding: EdgeInsets.only(top: 50)),
+                    const Padding(padding: EdgeInsets.only(top: 40)),
                     Container(
                       padding: const EdgeInsets.all(7),
                       decoration: BoxDecoration(
@@ -257,7 +250,7 @@ class InfoPage extends StatelessWidget {
                           ),
                           const Padding(padding: EdgeInsets.only(top: 4)),
                           Text(
-                            "HSBC bank\nAccount No: 34522052\nSort Code: 40-13-15",
+                            "Account Name:\nAl Mahad ul islami\nAccount No: 34522052\nSort Code: 40-13-15",
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 13.5,

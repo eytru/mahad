@@ -8,24 +8,24 @@ class PrayerBoxes extends StatelessWidget {
   final PrayerData? prayerData;
   final bool prayerBeginning;
   final bool prayerJamaat;
+  final bool isThursday;
+  final bool isFriday;
 
   const PrayerBoxes({
     super.key,
     this.prayerData,
     required this.prayerBeginning,
     required this.prayerJamaat,
+    this.isThursday = false,
+    this.isFriday = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final List<String> prayerNames = [
-      'Fajr',
-      'Sunrise',
-      'Zohar',
-      'Asr',
-      'Maghrib',
-      'Isha'
-    ];
+    // Determine the prayer names with 'Jumma' instead of 'Zohar' if it's Friday or Thursday in Jamaat tab
+    final List<String> prayerNames = (isThursday || isFriday) && prayerJamaat
+        ? ['Fajr', 'Sunrise', 'Jumma', 'Asr', 'Maghrib', 'Isha']
+        : ['Fajr', 'Sunrise', 'Zohar', 'Asr', 'Maghrib', 'Isha'];
 
     // Determine the prayer times based on the 'prayerBeginning' and 'prayerJamaat' flags
     List<String> prayerTimes = prayerBeginning
@@ -51,7 +51,6 @@ class PrayerBoxes extends StatelessWidget {
         .asMap()
         .map((index, time) {
           DateTime prayerTime = formatTime(time, prayerNames[index]);
-          // Format the DateTime to "hh:mm a" (e.g., 02:00 AM)
           String formattedTime = DateFormat('hh:mm a').format(prayerTime);
           return MapEntry(index, formattedTime);
         })
@@ -59,7 +58,7 @@ class PrayerBoxes extends StatelessWidget {
         .toList();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0), // Adjusted padding
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final double verticalPadding =
@@ -94,32 +93,31 @@ class PrayerBoxes extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                          height: 12), // Increased space between text and icon
+                      const SizedBox(height: 12),
                       Icon(
-                        index == 0 // Fajr case
+                        index == 0
                             ? CupertinoIcons.moon
-                            : (index == 1 // Sunrise case
+                            : (index == 1
                                 ? CupertinoIcons.sunrise_fill
-                                : (index == 2 // Zohar case
+                                : (index == 2
                                     ? CupertinoIcons.sun_max_fill
-                                    : (index == 3 // Asr case
+                                    : (index == 3
                                         ? CupertinoIcons.sun_max
-                                        : (index == 4 // Maghrib case
+                                        : (index == 4
                                             ? CupertinoIcons.sunset_fill
                                             : CupertinoIcons
-                                                .moon_stars_fill)))), // Isha case
+                                                .moon_stars_fill)))),
                         color: Colors.white,
-                        size: 40, // Increased icon size
+                        size: 40,
                       ),
-                      const SizedBox(
-                          height: 12), // Increased space between icon and time
+                      const SizedBox(height: 12),
                       Text(
-                        prayerTimes[index], // Display the formatted prayer time
+                        prayerTimes[index],
                         style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
