@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mahad/models/prayer_data.dart';
-import 'package:mahad/helper/time.dart'; // Import the helper file
-import 'package:intl/intl.dart'; // Import the intl package for date formatting
+import 'package:mahad/helper/time.dart';
+import 'package:intl/intl.dart';
 
 class PrayerBoxes extends StatelessWidget {
   final PrayerData? prayerData;
@@ -22,12 +22,10 @@ class PrayerBoxes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine the prayer names with 'Jumma' instead of 'Zohar' if it's Friday or Thursday in Jamaat tab
     final List<String> prayerNames = (isThursday || isFriday) && prayerJamaat
         ? ['Fajr', 'Sunrise', 'Jumma', 'Asr', 'Maghrib', 'Isha']
         : ['Fajr', 'Sunrise', 'Zohar', 'Asr', 'Maghrib', 'Isha'];
 
-    // Determine the prayer times based on the 'prayerBeginning' and 'prayerJamaat' flags
     List<String> prayerTimes = prayerBeginning
         ? [
             prayerData?.bFajr ?? "00:00",
@@ -46,7 +44,6 @@ class PrayerBoxes extends StatelessWidget {
             prayerData?.isha ?? "00:00"
           ];
 
-    // Format the times using the helper function
     prayerTimes = prayerTimes
         .asMap()
         .map((index, time) {
@@ -58,75 +55,86 @@ class PrayerBoxes extends StatelessWidget {
         .toList();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: MediaQuery.of(context).size.height < 750
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 10)
+          : const EdgeInsets.only(left: 10, right: 10, top: 25),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final double verticalPadding =
-              (constraints.maxHeight - (constraints.maxWidth / 2 * 3)) / 2.75;
+          bool isSmallScreen = MediaQuery.of(context).size.height < 750;
 
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: verticalPadding),
-            child: GridView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16.0,
-                mainAxisSpacing: 20.0,
-                childAspectRatio: 1,
-              ),
-              itemCount: prayerNames.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF005CB2),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        prayerNames[index],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Icon(
-                        index == 0
-                            ? CupertinoIcons.moon
-                            : (index == 1
-                                ? CupertinoIcons.sunrise_fill
-                                : (index == 2
-                                    ? CupertinoIcons.sun_max_fill
-                                    : (index == 3
-                                        ? CupertinoIcons.sun_max
-                                        : (index == 4
-                                            ? CupertinoIcons.sunset_fill
-                                            : CupertinoIcons
-                                                .moon_stars_fill)))),
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        prayerTimes[index],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+          double textSize = isSmallScreen ? 20 : 25; // Scale text
+          double timeTextSize = isSmallScreen ? 18 : 25; // Scale time text
+          double iconSize = isSmallScreen ? 35 : 45; // Scale icons
+          double spacing = isSmallScreen ? 10.0 : 12.0; // Adjust spacing
+
+          return GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // Keep 2 columns
+              crossAxisSpacing: isSmallScreen ? 12.0 : 16.0, // Adjust spacing
+              mainAxisSpacing: isSmallScreen ? 12.0 : 16.0,
+              childAspectRatio: isSmallScreen ? 1.2 : 1, // Scale box size
             ),
+            itemCount: prayerNames.length,
+            itemBuilder: (context, index) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF005CB2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      prayerNames[index],
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: textSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: spacing),
+                    Icon(
+                      _getPrayerIcon(index),
+                      color: Colors.white,
+                      size: iconSize,
+                    ),
+                    SizedBox(height: spacing),
+                    Text(
+                      prayerTimes[index],
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: timeTextSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),
     );
+  }
+
+  IconData _getPrayerIcon(int index) {
+    switch (index) {
+      case 0:
+        return CupertinoIcons.moon;
+      case 1:
+        return CupertinoIcons.sunrise_fill;
+      case 2:
+        return CupertinoIcons.sun_max_fill;
+      case 3:
+        return CupertinoIcons.sun_max;
+      case 4:
+        return CupertinoIcons.sunset_fill;
+      case 5:
+        return CupertinoIcons.moon_stars_fill;
+      default:
+        return CupertinoIcons.circle_fill;
+    }
   }
 }

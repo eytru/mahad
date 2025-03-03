@@ -99,10 +99,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             children: const [
                               ImageIcon(
                                 AssetImage('lib/icons/info.png'),
-                                size: 25,
+                                size: 23,
                                 color: Colors.white,
                               ),
-                              SizedBox(width: 10),
+                              SizedBox(width: 5),
                               Text(
                                 'Information',
                                 style: TextStyle(
@@ -146,10 +146,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             children: const [
                               ImageIcon(
                                 AssetImage('lib/icons/mosque.png'),
-                                size: 25,
+                                size: 23,
                                 color: Colors.white,
                               ),
-                              SizedBox(width: 10),
+                              SizedBox(width: 5),
                               Text(
                                 'Default Page',
                                 style: TextStyle(
@@ -162,7 +162,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0, vertical: 5.0),
+                                horizontal: 3.0, vertical: 5.0),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.white, width: 2),
                               borderRadius: BorderRadius.circular(10),

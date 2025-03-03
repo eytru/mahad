@@ -187,7 +187,7 @@ class _CalendarPageState extends State<CalendarPage>
               height: 55,
               width: 120,
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
+                color: const Color.fromARGB(255, 2, 93, 167),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Center(

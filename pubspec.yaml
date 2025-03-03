@@ -71,7 +71,6 @@ flutter:
   assets:
     - lib/icons/
     - lib/pdf/timetable.pdf
-    - lib/pdf/ramadan.pdf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.devclear/to/resolution-aware-images
