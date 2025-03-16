@@ -1,0 +1,2 @@
+/Users/mujahidkhan/workspace/mahad/android/app/.cxx/RelWithDebInfo/n2q1f035/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/mujahidkhan/workspace/mahad/android/app/.cxx/RelWithDebInfo/n2q1f035/arm64-v8a/CMakeFiles/rebuild_cache.dir

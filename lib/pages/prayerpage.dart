@@ -17,15 +17,8 @@ class _PrayerPageState extends State<PrayerPage>
   PrayerData? prayerDataToday;
   PrayerData? prayerDataTomorrow;
 
-  String currentMonth = DateFormat('MMMM').format(DateTime.now());
-  String nextMonth =
-      DateFormat('MMMM').format(DateTime.now().add(const Duration(days: 1)));
-  int todayDate = DateTime.now().day;
-  int tomorrowDate = DateTime.now().add(const Duration(days: 1)).day;
-  String currentDayDate = DateFormat('EEEE d MMMM yyyy').format(DateTime.now());
-  String tomorrowDayDate = DateFormat('EEEE d MMMM yyyy')
-      .format(DateTime.now().add(const Duration(days: 1)));
-
+  late String currentDayDate;
+  late String tomorrowDayDate;
   late TabController _tabController;
   int selectedTabIndex = 0;
 
@@ -36,12 +29,13 @@ class _PrayerPageState extends State<PrayerPage>
     _tabController = TabController(length: 3, vsync: this);
     _loadDefaultTab();
     fetchPrayerTimes();
+    updateDate();
+
     _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        setState(() {
-          selectedTabIndex = _tabController.index;
-        });
-      }
+      setState(() {
+        selectedTabIndex = _tabController.index;
+        updateDate();
+      });
     });
   }
 
@@ -57,14 +51,8 @@ class _PrayerPageState extends State<PrayerPage>
     if (state == AppLifecycleState.resumed) {
       _loadDefaultTab();
       fetchPrayerTimes();
+      updateDate();
     }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _loadDefaultTab();
-    fetchPrayerTimes();
   }
 
   Future<void> _loadDefaultTab() async {
@@ -78,7 +66,21 @@ class _PrayerPageState extends State<PrayerPage>
     });
   }
 
+  void updateDate() {
+    setState(() {
+      currentDayDate = DateFormat('EEEE d MMMM yyyy').format(DateTime.now());
+      tomorrowDayDate = DateFormat('EEEE d MMMM yyyy')
+          .format(DateTime.now().add(const Duration(days: 1)));
+    });
+  }
+
   Future<void> fetchPrayerTimes() async {
+    String currentMonth = DateFormat('MMMM').format(DateTime.now());
+    String nextMonth =
+        DateFormat('MMMM').format(DateTime.now().add(const Duration(days: 1)));
+    int todayDate = DateTime.now().day;
+    int tomorrowDate = DateTime.now().add(const Duration(days: 1)).day;
+
     QuerySnapshot<Map<String, dynamic>> querySnapshotToday =
         await FirebaseFirestore.instance
             .collection(currentMonth)
@@ -144,12 +146,20 @@ class _PrayerPageState extends State<PrayerPage>
                 unselectedLabelColor: Colors.grey,
                 tabs: const [
                   Tab(
-                      child:
-                          Column(children: [Text('Beginning'), Text('Times')])),
-                  Tab(child: Column(children: [Text('Jamaat'), Text('Times')])),
+                    child: Column(
+                      children: [Text('Beginning'), Text('Times')],
+                    ),
+                  ),
                   Tab(
-                      child:
-                          Column(children: [Text('Jamaat'), Text('Tomorrow')])),
+                    child: Column(
+                      children: [Text('Jamaat'), Text('Times')],
+                    ),
+                  ),
+                  Tab(
+                    child: Column(
+                      children: [Text('Jamaat'), Text('Tomorrow')],
+                    ),
+                  ),
                 ],
               ),
               Expanded(

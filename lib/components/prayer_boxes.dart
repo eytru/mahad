@@ -20,6 +20,14 @@ class PrayerBoxes extends StatelessWidget {
     this.isFriday = false,
   });
 
+  bool isSmallScreen(BuildContext context) {
+    return MediaQuery.of(context).size.height < 750;
+  }
+
+  bool isLargeScreen(BuildContext context) {
+    return MediaQuery.of(context).size.width > 700; // Adjust for iPads
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<String> prayerNames = (isThursday || isFriday) && prayerJamaat
@@ -54,26 +62,57 @@ class PrayerBoxes extends StatelessWidget {
         .values
         .toList();
 
+    bool smallScreen = isSmallScreen(context);
+    bool largeScreen = isLargeScreen(context);
+
+    double textSize = smallScreen
+        ? 20
+        : largeScreen
+            ? 28
+            : 25;
+    double timeTextSize = smallScreen
+        ? 18
+        : largeScreen
+            ? 26
+            : 25;
+    double iconSize = smallScreen
+        ? 35
+        : largeScreen
+            ? 50
+            : 45;
+    double spacing = smallScreen
+        ? 10.0
+        : largeScreen
+            ? 15.0
+            : 12.0;
+    double childAspectRatio = smallScreen
+        ? 1.2
+        : largeScreen
+            ? 1.4
+            : 1.0;
+    int crossAxisCount = largeScreen ? 2 : 2;
+
     return Padding(
       padding: MediaQuery.of(context).size.height < 750
           ? const EdgeInsets.symmetric(horizontal: 16, vertical: 10)
           : const EdgeInsets.only(left: 10, right: 10, top: 25),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          bool isSmallScreen = MediaQuery.of(context).size.height < 750;
-
-          double textSize = isSmallScreen ? 20 : 25; // Scale text
-          double timeTextSize = isSmallScreen ? 18 : 25; // Scale time text
-          double iconSize = isSmallScreen ? 35 : 45; // Scale icons
-          double spacing = isSmallScreen ? 10.0 : 12.0; // Adjust spacing
-
           return GridView.builder(
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // Keep 2 columns
-              crossAxisSpacing: isSmallScreen ? 12.0 : 16.0, // Adjust spacing
-              mainAxisSpacing: isSmallScreen ? 12.0 : 16.0,
-              childAspectRatio: isSmallScreen ? 1.2 : 1, // Scale box size
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: smallScreen
+                  ? 12.0
+                  : largeScreen
+                      ? 20.0
+                      : 16.0,
+              mainAxisSpacing: smallScreen
+                  ? 12.0
+                  : largeScreen
+                      ? 20.0
+                      : 16.0,
+              childAspectRatio: childAspectRatio,
             ),
             itemCount: prayerNames.length,
             itemBuilder: (context, index) {

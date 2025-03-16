@@ -51,81 +51,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 MainAxisAlignment.start, // Aligns children toward the top
             children: [
               const SizedBox(height: 50), // Adds space from the top
-
-              // Information Section with slightly raised effect
-              SizedBox(
-                height: 70, // Manually set the height of the button
-                child: Card(
-                  elevation: 8, // Slightly raised effect
-                  color: const Color.fromARGB(255, 1, 52, 94),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  const InfoPage(),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            const begin =
-                                Offset(1.0, 0.0); // Slide in from right
-                            const end = Offset.zero;
-                            const curve = Curves.easeInOut;
-
-                            var tween = Tween(begin: begin, end: end)
-                                .chain(CurveTween(curve: curve));
-                            var offsetAnimation = animation.drive(tween);
-
-                            return SlideTransition(
-                              position: offsetAnimation,
-                              child: child,
-                            );
-                          },
-                          transitionDuration: const Duration(
-                              milliseconds: 300), // Quicker transition
-                        ),
-                      );
-                    },
-                    behavior:
-                        HitTestBehavior.translucent, // Ensure taps are detected
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment
-                            .spaceBetween, // Align text and icon
-                        children: [
-                          Row(
-                            children: const [
-                              ImageIcon(
-                                AssetImage('lib/icons/info.png'),
-                                size: 23,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                'Information',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
               // Default Prayer Page Dropdown with slightly raised effect
               SizedBox(
                 height: 70, // Manually set the height of the button
@@ -202,6 +127,79 @@ class _SettingsPageState extends State<SettingsPage> {
                                     const Color.fromARGB(255, 1, 52, 94),
                               ),
                             ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Information Section with slightly raised effect
+              SizedBox(
+                height: 70, // Manually set the height of the button
+                child: Card(
+                  elevation: 8, // Slightly raised effect
+                  color: const Color.fromARGB(255, 1, 52, 94),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const InfoPage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin =
+                                Offset(1.0, 0.0); // Slide in from right
+                            const end = Offset.zero;
+                            const curve = Curves.easeInOut;
+
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
+
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                          transitionDuration: const Duration(
+                              milliseconds: 300), // Quicker transition
+                        ),
+                      );
+                    },
+                    behavior:
+                        HitTestBehavior.translucent, // Ensure taps are detected
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .spaceBetween, // Align text and icon
+                        children: [
+                          Row(
+                            children: const [
+                              ImageIcon(
+                                AssetImage('lib/icons/info.png'),
+                                size: 23,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Information',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ],
                       ),

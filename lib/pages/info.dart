@@ -231,7 +231,7 @@ class InfoPage extends StatelessWidget {
                   child: Column(
                     children: [
                       const Text(
-                        "Masjid Account Details",
+                        "Account Details",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 17.5,
@@ -241,7 +241,7 @@ class InfoPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        "Al Mahadul Islami\nAccount No: 34522052\nSort Code: 40-13-15",
+                        "Al Mahadul Islami\nAccount No: 13161595\nSort Code: 20-76-92",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 13.5,
@@ -252,7 +252,8 @@ class InfoPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20), // Added extra space to prevent overflow
+                const SizedBox(
+                    height: 20), // Added extra space to prevent overflow
               ],
             ),
           ),
